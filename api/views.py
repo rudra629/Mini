@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from .models import Hotel, Room, Booking
 from .serializers import UserSerializer, HotelSerializer, RoomSerializer, BookingSerializer
+from .models import Hotel, Room, Booking, ServiceReservation
+from .serializers import UserSerializer, HotelSerializer, RoomSerializer, BookingSerializer, ServiceReservationSerializer
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -55,3 +57,13 @@ class BookingViewSet(viewsets.ModelViewSet):
         total = room_obj.price_per_night * days
         
         serializer.save(user=self.request.user, total_price=total)
+
+class ServiceReservationViewSet(viewsets.ModelViewSet):
+    serializer_class = ServiceReservationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return ServiceReservation.objects.filter(user=self.request.user).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

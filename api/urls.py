@@ -1,14 +1,14 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import RegisterView, HotelViewSet, RoomViewSet, BookingViewSet
+from .views import RegisterView, HotelViewSet, RoomViewSet, BookingViewSet, ServiceReservationViewSet
 
 router = DefaultRouter()
 # Registering the new endpoints
 router.register(r'hotels', HotelViewSet, basename='hotel')
 router.register(r'rooms', RoomViewSet, basename='room')
 router.register(r'bookings', BookingViewSet, basename='booking')
-
+router.register(r'service-reservations', ServiceReservationViewSet, basename='service-reservation')
 urlpatterns = [
     # Auth endpoints
     path('auth/register/', RegisterView.as_view(), name='register'),

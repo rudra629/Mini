@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Hotel, Room, Booking
+from .models import Hotel, Room, Booking, ServiceReservation
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -18,12 +18,18 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class RoomSerializer(serializers.ModelSerializer):
+    # MAGIC TRICK: This sends the actual image file path to React as 'image_url'
+    image_url = serializers.ImageField(source='image', read_only=True)
+
     class Meta:
         model = Room
         fields = '__all__'
 
 class HotelSerializer(serializers.ModelSerializer):
     rooms = RoomSerializer(many=True, read_only=True)
+    # MAGIC TRICK: This sends the actual image file path to React as 'image_url'
+    image_url = serializers.ImageField(source='image', read_only=True)
+
     class Meta:
         model = Hotel
         fields = '__all__'
@@ -39,3 +45,11 @@ class BookingSerializer(serializers.ModelSerializer):
             'check_out', 'total_price', 'status', 'created_at'
         ]
         read_only_fields = ('user', 'total_price')
+
+class ServiceReservationSerializer(serializers.ModelSerializer):
+    hotel_name = serializers.CharField(source='hotel.name', read_only=True)
+
+    class Meta:
+        model = ServiceReservation
+        fields = '__all__'
+        read_only_fields = ('user', 'status')
